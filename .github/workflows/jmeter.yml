@@ -1,0 +1,44 @@
+name: Run JMeter Tests
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  jmeter:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install JMeter
+      run: |
+        sudo apt update
+        sudo apt install -y openjdk-11-jre
+        wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.5.tgz
+        tar -xvzf apache-jmeter-5.5.tgz
+        export JMETER_HOME=$PWD/apache-jmeter-5.5
+        export PATH=$JMETER_HOME/bin:$PATH
+
+    - name: Run Load Test
+      run: |
+        jmeter -n -t POC_PerfTestSuit_LoadTest.jmx -l results_load.jtl
+
+    - name: Run Stress Test
+      run: |
+        jmeter -n -t POC_PerfTestSuit_StressTest.jmx -l results_stress.jtl
+
+    - name: Run Endurance Test
+      run: |
+        jmeter -n -t POC_PerfTestSuit_EnduranceTest.jmx -l results_endurance.jtl
+
+    - name: Upload Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: jmeter-results
+        path: |
+          results_load.jtl
+          results_stress.jtl
+          results_endurance.jtl
