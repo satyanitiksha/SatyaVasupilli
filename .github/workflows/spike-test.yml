@@ -1,4 +1,4 @@
-name: Run Spike Test
+name: Run Spike Test with HTML Report
 
 on:
   workflow_dispatch:
@@ -6,8 +6,11 @@ on:
 jobs:
   spike_test:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
     - name: Install JMeter
       run: |
         sudo apt update
@@ -16,10 +19,26 @@ jobs:
         tar -xvzf apache-jmeter-5.5.tgz
         export JMETER_HOME=$PWD/apache-jmeter-5.5
         export PATH=$JMETER_HOME/bin:$PATH
+
     - name: Run Spike Test
-      run: jmeter -n -t POC_PerfTestSuit_SpikeTest.jmx -l results_spike.jtl
-    - name: Upload Spike Results
+      run: |
+        mkdir -p results/spike
+        jmeter -n -t POC_PerfTestSuit_SpikeTest.jmx -l results/spike/results_spike.jtl -e -o results/spike/html_report
+
+    - name: Upload Spike HTML Report as Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: spike-results
-        path: results_spike.jtl
+        name: spike-html-report
+        path: results/spike/html_report
+
+    - name: Commit and Push HTML Report to GitHub
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git fetch
+        git checkout results || git checkout -b results
+        mkdir -p reports/spike
+        cp -r results/spike/html_report/* reports/spike/
+        git add reports/spike
+        git commit -m "Add Spike Test HTML report - $(date)"
+        git push origin results

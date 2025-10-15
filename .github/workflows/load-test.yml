@@ -25,8 +25,20 @@ jobs:
         mkdir -p results/load
         jmeter -n -t POC_PerfTestSuit_LoadTest.jmx -l results/load/results_load.jtl -e -o results/load/html_report
 
-    - name: Upload HTML Report
+    - name: Upload HTML Report as Artifact
       uses: actions/upload-artifact@v3
       with:
         name: load-html-report
         path: results/load/html_report
+
+    - name: Commit and Push HTML Report to GitHub
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git fetch
+        git checkout results || git checkout -b results
+        mkdir -p reports/load
+        cp -r results/load/html_report/* reports/load/
+        git add reports/load
+        git commit -m "Add Load Test HTML report - $(date)"
+        git push origin results

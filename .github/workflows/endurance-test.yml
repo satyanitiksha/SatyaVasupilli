@@ -1,4 +1,4 @@
-name: Run Endurance Test
+name: Run Endurance Test with HTML Report
 
 on:
   workflow_dispatch:
@@ -6,8 +6,11 @@ on:
 jobs:
   endurance_test:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
     - name: Install JMeter
       run: |
         sudo apt update
@@ -16,10 +19,26 @@ jobs:
         tar -xvzf apache-jmeter-5.5.tgz
         export JMETER_HOME=$PWD/apache-jmeter-5.5
         export PATH=$JMETER_HOME/bin:$PATH
+
     - name: Run Endurance Test
-      run: jmeter -n -t POC_PerfTestSuit_EnduranceTest.jmx -l results_endurance.jtl
-    - name: Upload Endurance Results
+      run: |
+        mkdir -p results/endurance
+        jmeter -n -t POC_PerfTestSuit_EnduranceTest.jmx -l results/endurance/results_endurance.jtl -e -o results/endurance/html_report
+
+    - name: Upload Endurance HTML Report as Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: endurance-results
-        path: results_endurance.jtl
+        name: endurance-html-report
+        path: results/endurance/html_report
+
+    - name: Commit and Push HTML Report to GitHub
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git fetch
+        git checkout results || git checkout -b results
+        mkdir -p reports/endurance
+        cp -r results/endurance/html_report/* reports/endurance/
+        git add reports/endurance
+        git commit -m "Add Endurance Test HTML report - $(date)"
+        git push origin results
