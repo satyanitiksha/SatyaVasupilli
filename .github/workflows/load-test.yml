@@ -1,4 +1,4 @@
-name: Run Load Test
+name: Run Load Test with HTML Report
 
 on:
   workflow_dispatch:
@@ -6,8 +6,11 @@ on:
 jobs:
   load_test:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
     - name: Install JMeter
       run: |
         sudo apt update
@@ -16,10 +19,14 @@ jobs:
         tar -xvzf apache-jmeter-5.5.tgz
         export JMETER_HOME=$PWD/apache-jmeter-5.5
         export PATH=$JMETER_HOME/bin:$PATH
+
     - name: Run Load Test
-      run: jmeter -n -t POC_PerfTestSuit_LoadTest.jmx -l results_load.jtl
-    - name: Upload Load Results
+      run: |
+        mkdir -p results/load
+        jmeter -n -t POC_PerfTestSuit_LoadTest.jmx -l results/load/results_load.jtl -e -o results/load/html_report
+
+    - name: Upload HTML Report
       uses: actions/upload-artifact@v3
       with:
-        name: load-results
-        path: results_load.jtl
+        name: load-html-report
+        path: results/load/html_report
