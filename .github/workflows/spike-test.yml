@@ -1,0 +1,25 @@
+name: Run Spike Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  spike_test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install JMeter
+      run: |
+        sudo apt update
+        sudo apt install -y openjdk-11-jre
+        wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.5.tgz
+        tar -xvzf apache-jmeter-5.5.tgz
+        export JMETER_HOME=$PWD/apache-jmeter-5.5
+        export PATH=$JMETER_HOME/bin:$PATH
+    - name: Run Spike Test
+      run: jmeter -n -t POC_PerfTestSuit_SpikeTest.jmx -l results_spike.jtl
+    - name: Upload Spike Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: spike-results
+        path: results_spike.jtl

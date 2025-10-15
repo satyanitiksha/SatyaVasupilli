@@ -1,0 +1,25 @@
+name: Run Load Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  load_test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install JMeter
+      run: |
+        sudo apt update
+        sudo apt install -y openjdk-11-jre
+        wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.5.tgz
+        tar -xvzf apache-jmeter-5.5.tgz
+        export JMETER_HOME=$PWD/apache-jmeter-5.5
+        export PATH=$JMETER_HOME/bin:$PATH
+    - name: Run Load Test
+      run: jmeter -n -t POC_PerfTestSuit_LoadTest.jmx -l results_load.jtl
+    - name: Upload Load Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: load-results
+        path: results_load.jtl
