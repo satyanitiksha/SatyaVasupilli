@@ -20,9 +20,9 @@ jobs:
         JMETER_HOME=$PWD/apache-jmeter-5.6.3
         cd $JMETER_HOME
         # Install JMeter Plugins Manager
-        wget https://jmeter-plugins.org/files/packages/jpgc-cmdrunner-2.2.zip
-        unzip jpgc-cmdrunner-2.2.zip
-        cp cmdrunner-2.2.jar lib/
+        wget https://jmeter-plugins.org/files/packages/cmdrunner-2.3.zip
+        unzip cmdrunner-2.3.zip
+        cp cmdrunner-2.3.jar lib/
         cp plugins-manager.jar lib/
         # Install Ultimate Thread Group plugin
         java -cp lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMD install jpgc-utg
