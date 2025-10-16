@@ -21,9 +21,9 @@ jobs:
         cd $JMETER_HOME
         # Download plugin manager jars directly from Maven Central
         wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/2.3/cmdrunner-2.3.jar -O cmdrunner-2.3.jar
-        wget https://repo1.maven.org/maven2/kg/apc/jmeter-plugins-manager/1.6/jmeter-plugins-manager-1.6.jar -O plugins-manager.jar
+        wget https://repo1.maven.org/maven2/kg/apc/jmeter-plugins-manager/1.6/jmeter-plugins-manager-1.6.jar -O jmeter-plugins-manager.jar
         cp cmdrunner-2.3.jar lib/
-        cp plugins-manager.jar lib/
+        cp jmeter-plugins-manager.jar lib/ext/
         # Install Ultimate Thread Group plugin
         java -cp lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMD install jpgc-utg
 
