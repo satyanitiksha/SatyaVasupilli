@@ -26,7 +26,7 @@ jobs:
         jmeter -n -t tests/POC_PerfTestSuit_EnduranceTest.jmx -l results/endurance/results_endurance.jtl -e -o results/endurance/html_report
 
     - name: Upload Endurance HTML Report as Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: endurance-html-report
         path: results/endurance/html_report
