@@ -1,10 +1,10 @@
-name: Run Load Test with HTML Report
+name: Run Endurance Test with HTML Report
 
 on:
   workflow_dispatch:
 
 jobs:
-  load_test:
+  endurance_test:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,25 +19,25 @@ jobs:
         tar -xvzf apache-jmeter-5.6.3.tgz
         JMETER_HOME=$PWD/apache-jmeter-5.6.3
         cd $JMETER_HOME
-        # Install JMeter Plugins Manager
-        wget https://jmeter-plugins.org/files/packages/cmdrunner-2.3.zip
-        unzip cmdrunner-2.3.zip
+        # Download plugin manager jars directly
+        wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/2.3/cmdrunner-2.3.jar -O cmdrunner-2.3.jar
+        wget https://jmeter-plugins.org/files/plugins-manager.jar -O plugins-manager.jar
         cp cmdrunner-2.3.jar lib/
         cp plugins-manager.jar lib/
         # Install Ultimate Thread Group plugin
         java -cp lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMD install jpgc-utg
 
-    - name: Run Load Test
+    - name: Run Endurance Test
       run: |
         JMETER_HOME=$PWD/apache-jmeter-5.6.3
-        mkdir -p results/load/html_report
-        $JMETER_HOME/bin/jmeter -n -t tests/POC_PerfTestSuit_LoadTest.jmx -l results/load/results_load.jtl -e -o results/load/html_report
+        mkdir -p results/endurance/html_report
+        $JMETER_HOME/bin/jmeter -n -t tests/POC_PerfTestSuit_EnduranceTest.jmx -l results/endurance/results_endurance.jtl -e -o results/endurance/html_report
 
-    - name: Upload HTML Report as Artifact
+    - name: Upload Endurance HTML Report as Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: load-html-report
-        path: results/load/html_report
+        name: endurance-html-report
+        path: results/endurance/html_report
 
     - name: Commit and Push HTML Report to GitHub
       run: |
@@ -45,8 +45,8 @@ jobs:
         git config --global user.email "github-actions@github.com"
         git fetch
         git checkout results || git checkout -b results
-        mkdir -p reports/load
-        cp -r results/load/html_report/* reports/load/
-        git add reports/load
-        git commit -m "Add Load Test HTML report - $(date)"
+        mkdir -p reports/endurance
+        cp -r results/endurance/html_report/* reports/endurance/
+        git add reports/endurance
+        git commit -m "Add Endurance Test HTML report - $(date)"
         git push origin results
