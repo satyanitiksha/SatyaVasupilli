@@ -15,15 +15,15 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y openjdk-11-jre
-        wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.5.tgz
-        tar -xvzf apache-jmeter-5.5.tgz
-        export JMETER_HOME=$PWD/apache-jmeter-5.5
-        export PATH=$JMETER_HOME/bin:$PATH
+        wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz
+        tar -xvzf apache-jmeter-5.6.3.tgz
+        echo "JMETER_HOME=$PWD/apache-jmeter-5.6.3" >> $GITHUB_ENV
+        echo "PATH=$PWD/apache-jmeter-5.6.3/bin:$PATH" >> $GITHUB_ENV
 
     - name: Run Spike Test
       run: |
-        mkdir -p results/spike
-        jmeter -n -t POC_PerfTestSuit_SpikeTest.jmx -l results/spike/results_spike.jtl -e -o results/spike/html_report
+        mkdir -p results/spike/html_report
+        jmeter -n -t tests/POC_PerfTestSuit_SpikeTest.jmx -l results/spike/results_spike.jtl -e -o results/spike/html_report
 
     - name: Upload Spike HTML Report as Artifact
       uses: actions/upload-artifact@v3
