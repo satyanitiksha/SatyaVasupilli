@@ -11,19 +11,25 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Install JMeter
+    - name: Install JMeter and Plugins
       run: |
         sudo apt update
-        sudo apt install -y openjdk-11-jre
+        sudo apt install -y openjdk-11-jre unzip
         wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz
         tar -xvzf apache-jmeter-5.6.3.tgz
-        echo "JMETER_HOME=$PWD/apache-jmeter-5.6.3" >> $GITHUB_ENV
-        echo "PATH=$PWD/apache-jmeter-5.6.3/bin:$PATH" >> $GITHUB_ENV
+        JMETER_HOME=$PWD/apache-jmeter-5.6.3
+        cd $JMETER_HOME
+        wget https://jmeter-plugins.org/files/packages/jpgc-cmdrunner-2.2.zip
+        unzip jpgc-cmdrunner-2.2.zip
+        cp cmdrunner-2.2.jar lib/
+        cp plugins-manager.jar lib/
+        java -cp lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMD install jpgc-utg
 
     - name: Run Spike Test
       run: |
+        JMETER_HOME=$PWD/apache-jmeter-5.6.3
         mkdir -p results/spike/html_report
-        jmeter -n -t tests/POC_PerfTestSuit_SpikeTest.jmx -l results/spike/results_spike.jtl -e -o results/spike/html_report
+        $JMETER_HOME/bin/jmeter -n -t tests/POC_PerfTestSuit_SpikeTest.jmx -l results/spike/results_spike.jtl -e -o results/spike/html_report
 
     - name: Upload Spike HTML Report as Artifact
       uses: actions/upload-artifact@v4
