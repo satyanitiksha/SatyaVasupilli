@@ -26,7 +26,7 @@ jobs:
         jmeter -n -t tests/POC_PerfTestSuit_SpikeTest.jmx -l results/spike/results_spike.jtl -e -o results/spike/html_report
 
     - name: Upload Spike HTML Report as Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: spike-html-report
         path: results/spike/html_report
