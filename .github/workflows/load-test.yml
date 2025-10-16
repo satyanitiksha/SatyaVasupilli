@@ -28,7 +28,7 @@ jobs:
         jmeter -n -t tests/POC_PerfTestSuit_LoadTest.jmx -l results/load/results_load.jtl -e -o results/load/html_report
 
     - name: Upload HTML Report as Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: load-html-report
         path: results/load/html_report
